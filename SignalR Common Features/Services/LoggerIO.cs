@@ -7,10 +7,5 @@ namespace SignalR_Common_Features.Services
     {
         public static void PrintEvent(string methodName, string content) => Console.WriteLine(
             $@"Method '{methodName}': {content}");
-
-        public static void PrintEvent()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

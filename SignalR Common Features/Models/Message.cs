@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SignalR_Common_Features.Models;
 
 namespace SignalR_Common_Features
 {
     public class Message
     {
-        public string Sender { get; set; }
+        public User Sender { get; set; }
         public string Text { get; set; }
-        //public DateTime Date { get; set; }
+        public DateTime Date { get; set; }
 
-        public override string ToString() => $"{Sender}({1/*Date.ToShortTimeString()*/}): {Text}";
+        public override string ToString() => $"{Sender.Username}({Date.ToShortTimeString()}): {Text}";
     }
 }

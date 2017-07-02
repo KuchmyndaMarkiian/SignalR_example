@@ -14,14 +14,11 @@ namespace SignalR_Server
         {
             try
             {
+                //Start SignalR server which defined in assemblies and startup
                 using (WebApp.Start(Constants.Url))
                 {
                     WriteLine($"Server is starting on {Constants.Url}");
-
-                    while (true)
-                    {
-                        ReadKey(true);
-                    }
+                    while (true) ;
                 }
             }
             catch (Exception e)

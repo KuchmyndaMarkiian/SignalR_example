@@ -1,6 +1,9 @@
 ﻿using System;
 using Microsoft.AspNet.SignalR.Client;
+using SignalR_Client.Abstractions;
+using SignalR_Client.Service;
 using SignalR_Common_Features;
+using SignalR_Common_Features.Models;
 using static System.Console;
 
 namespace SignalR_Client
@@ -10,39 +13,28 @@ namespace SignalR_Client
         static void Main(string[] args)
         {
             WriteLine($"Client is starting on {Constants.Url}");
-            var hubConnection = new HubConnection(Constants.Url)
-            {
-                TraceWriter = Console.Out,
-                TraceLevel = TraceLevels.All
-            };
-            var hubProxy = hubConnection.CreateHubProxy("MarkHub");
-            hubProxy.On<Message>("addMessage", message =>
-            {
-                ForegroundColor = ConsoleColor.DarkCyan;
-                WriteLine(message.ToString());
-                ResetColor();
-            });
 
-
-            hubConnection.Start().Wait();
+            var hubConnection = new HubConnection(Constants.Url);
             Write("Enter username:");
             string username = ReadLine();
+            IHubService hubService = new ChatService()
+            {
+                User = new User() {Username = username,Id = "null",Color = (ConsoleColor) Enum.ToObject(typeof(ConsoleColor), new Random().Next(1, 15))}
+            };
+            hubService.ConfigureProxy(hubConnection).Wait();
+            hubService.Connect().Wait();
             while (true)
             {
                 string message = ReadLine();
-                hubProxy.Invoke<Message>("addMessage",
-                    new Message() {Sender = username, Text = message, /*Date = DateTime.Now*/}).ContinueWith(task =>
+                if (message != null && message.Contains("_exit_"))
                 {
-                    if(task.IsFaulted)
-                        WriteLine($"Exception:{task.Exception.Message}");
-                    else
-                    {
-                        WriteLine("is sended");
-                    }
-                }).Wait();
+                    hubService.Disconnect().Wait();
+                    break;
+                }
+                if(string.IsNullOrWhiteSpace(message))
+                    continue;
+                hubService.SendData(message).Wait();
             }
-
-
         }
     }
 }
